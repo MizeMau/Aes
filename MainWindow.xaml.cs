@@ -115,7 +115,8 @@ namespace Aes
             var transactionTransactionService = new Database.Table.Transaction.Transaction.Service();
 
             Categories = transactionCategoryService.GetAll();
-            var transactions = transactionTransactionService.GetAllByMonth();
+            var transactions = transactionTransactionService.GetAllByMonth()
+                .OrderByDescending(o => (o.Date, o.TransactionTransactionID));
             var transactionsDict = transactions
                 .GroupBy(g => g.TransactionCategoryID)
                 .Select(s => new
