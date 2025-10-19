@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36603.0 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aes", "Aes.csproj", "{98616FFF-83D3-4B40-BE51-6417358D85B9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{98616FFF-83D3-4B40-BE51-6417358D85B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98616FFF-83D3-4B40-BE51-6417358D85B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98616FFF-83D3-4B40-BE51-6417358D85B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98616FFF-83D3-4B40-BE51-6417358D85B9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3B1C7C72-AB92-4BDE-8B28-AFE509FE50F7}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,158 @@
+﻿<Window x:Class="Aes.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Aes"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"        
+        mc:Ignorable="d"
+        Background="#0f1724"
+        Foreground="#98a0b3"
+        FontSize="30"
+        Title="MainWindow" Height="1080" Width="1920">
+    <Grid>
+        <StackPanel Orientation="Horizontal">
+            <Border BorderBrush="Gray" 
+                    BorderThickness="1" 
+                    CornerRadius="10" 
+                    Padding="20" 
+                    Margin="10">
+                <Border.Background>
+                    <SolidColorBrush Opacity="0.17" Color="#000" />
+                </Border.Background>
+                <Border.Effect>
+                    <DropShadowEffect />
+                </Border.Effect>
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Border CornerRadius="20" Width="100" Height="100">
+                            <Border.Background>
+                                <ImageBrush ImageSource="/Images/MizeMau.png"
+                                            Stretch="UniformToFill"/>
+                            </Border.Background>
+                        </Border>
+                        <StackPanel>
+                            <TextBlock FontWeight="Bold"
+                                       Margin="20,0,20,0"
+                                       FontSize="50"
+                                       Foreground="White">
+                                Student Budget Book
+                            </TextBlock>
+                            <TextBlock Margin="20,0,20,0">
+                                Simple, focused — for students
+                            </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical"
+                                Margin="0,20,0,0">
+                        <TextBlock>Available balance</TextBlock>
+                        <TextBlock Foreground="White"
+                                   FontWeight="Bold">
+                            €188.90
+                        </TextBlock>
+                        <TextBlock>October 2025</TextBlock>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+            <Border BorderBrush="Gray" 
+                    BorderThickness="1" 
+                    CornerRadius="10" 
+                    Padding="20" 
+                    Margin="10">
+                <Border.Background>
+                    <SolidColorBrush Opacity="0.17" Color="#000" />
+                </Border.Background>
+                <Border.Effect>
+                    <DropShadowEffect />
+                </Border.Effect>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Foreground="White"
+                               FontWeight="Bold">
+                        Overview
+                    </TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <Border BorderBrush="Gray" 
+                                BorderThickness="1" 
+                                CornerRadius="10" 
+                                Padding="20" 
+                                Margin="10">
+                            <StackPanel>
+                                <TextBlock Foreground="White"
+                                           FontWeight="Bold">
+                                    Spending breakdown
+                                </TextBlock>
+                                <lvc:PieChart Series="{Binding SeriesCollection}"
+                                              LegendLocation="Right"
+                                              InnerRadius="60" 
+                                              Height="400"
+                                              Width="400"
+                                              Name="pieChart">
+                                    <lvc:PieChart.DataTooltip>
+                                        <local:ToolTip x:Name="myCustomTooltip"/>
+                                    </lvc:PieChart.DataTooltip>
+                                </lvc:PieChart>
+                                <TextBlock Foreground="White"
+                                           FontWeight="Bold">
+                                    Monthly budgets
+                                </TextBlock>
+                                <TextBlock>Rent</TextBlock>
+                                <Grid>
+                                    <ProgressBar x:Name="progressBar" Value="60" Maximum="100" Height="20"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                        <Border BorderBrush="Gray" 
+                                BorderThickness="1" 
+                                CornerRadius="10" 
+                                Padding="20" 
+                                Margin="10">
+                            <TextBlock Foreground="White"
+                                       FontWeight="Bold">
+                                Transactions
+                            </TextBlock>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Grid>
+
+    <Window.Resources>
+        <Style TargetType="ProgressBar">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Grid x:Name="Root" ClipToBounds="True" Height="20">
+                            <!-- Background -->
+                            <Border x:Name="Background"
+                                    CornerRadius="10"
+                                    Background="#1f1f1f"/>
+                            <!-- Filled part -->
+                            <Border x:Name="PART_Track"
+                                    Background="Transparent"
+                                    CornerRadius="10">
+                                <Border x:Name="PART_Indicator"
+                                        Background="#4CAF50"
+                                        CornerRadius="10"
+                                        HorizontalAlignment="Left"
+                                        Width="0"/>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsIndeterminate" Value="True">
+                                <Setter TargetName="PART_Indicator" Property="Background" Value="#4CAF50"/>
+                            </Trigger>
+                            <Trigger Property="Orientation" Value="Vertical">
+                                <Setter TargetName="Root" Property="LayoutTransform">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="-90"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+</Window>

@@ -1,0 +1,583 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Student Budget Book — Mockup</title>
+  <style>
+    :root {
+      --bg: #0f1724; /* deep navy */
+      --card: #0b1220;
+      --muted: #98a0b3;
+      --accent: #7c5cff; /* violet */
+      --accent-2: #00d1b2; /* teal */
+      --glass: rgba(255,255,255,0.03);
+      --danger: #ff6b6b;
+      --success: #4ade80;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(180deg,var(--bg),#071022 140%);
+      color: #e6eef8;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: 28px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .app {
+      width: 1000px;
+      max-width: 100%;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 20px;
+    }
+
+    /* sidebar */
+    .sidebar {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 6px 18px rgba(2,6,23,0.6);
+    }
+
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 8px
+    }
+
+    .logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: linear-gradient(135deg,var(--accent),var(--accent-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white
+    }
+
+    .brand h1 {
+      font-size: 16px;
+      margin: 0
+    }
+
+    .brand p {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0
+    }
+
+    .summary {
+      margin-top: 14px
+    }
+
+    .big-balance {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    .quick-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px
+    }
+
+    .stat {
+      background: var(--glass);
+      padding: 10px;
+      border-radius: 8px
+    }
+
+      .stat .val {
+        font-weight: 700
+      }
+
+    .add-panel {
+      margin-top: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.015), transparent);
+      padding: 12px;
+      border-radius: 10px
+    }
+
+    .row {
+      display: flex;
+      gap: 8px
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 8px
+    }
+
+    label {
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    input, select {
+      background: #061026;
+      border: 1px solid rgba(255,255,255,0.03);
+      padding: 8px;
+      border-radius: 8px;
+      color: inherit
+    }
+
+    .btn {
+      background: linear-gradient(90deg,var(--accent),#6a8cff);
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: none;
+      color: white;
+      font-weight: 600;
+      cursor: pointer
+    }
+
+      .btn.ghost {
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.04)
+      }
+
+    /* main */
+    .main {
+      min-height: 600px;
+      padding: 18px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      box-shadow: 0 6px 18px rgba(2,6,23,0.6)
+    }
+
+    .toprow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      align-items: center
+    }
+
+    .panels {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 18px
+    }
+
+    .card {
+      background: var(--card);
+      padding: 14px;
+      border-radius: 12px
+    }
+
+    .chart-wrap {
+      display: flex;
+      gap: 12px;
+      align-items: center
+    }
+
+    canvas {
+      background: transparent
+    }
+
+    .tx-list {
+      margin-top: 12px
+    }
+
+    .tx {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent)
+    }
+
+      .tx .left {
+        display: flex;
+        gap: 12px;
+        align-items: center
+      }
+
+    .cat-chip {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700
+    }
+
+    .tx .meta {
+      display: flex;
+      flex-direction: column
+    }
+
+    .tx .amount {
+      font-weight: 700
+    }
+
+    .tx .muted {
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    .empty {
+      color: var(--muted);
+      padding: 20px;
+      text-align: center
+    }
+
+    footer.note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    /* responsive */
+    @media (max-width:980px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .panels {
+        grid-template-columns: 1fr
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="Student budget book mockup">
+    <aside class="sidebar" aria-label="controls">
+      <div class="brand">
+        <div class="logo">SB</div>
+        <div>
+          <h1>Student Budget Book</h1>
+          <p class="small">Simple, focused — for students</p>
+        </div>
+      </div>
+
+      <div class="summary">
+        <div class="small">Available balance</div>
+        <div class="big-balance" id="balance">€0.00</div>
+        <div class="small" id="monthLabel">October 2025</div>
+      </div>
+
+      <div class="quick-stats">
+        <div class="stat" aria-hidden>
+          <div class="small">Income</div>
+          <div class="val" id="income">€0.00</div>
+        </div>
+        <div class="stat" aria-hidden>
+          <div class="small">Expenses</div>
+          <div class="val" id="expenses">€0.00</div>
+        </div>
+      </div>
+
+      <div class="add-panel" aria-label="add transaction">
+        <div class="field">
+          <label for="desc">Description</label>
+          <input id="desc" placeholder="Coffee, rent, bus" />
+        </div>
+        <div class="row">
+          <div style="flex:1" class="field">
+            <label for="amount">Amount (€)</label>
+            <input id="amount" type="number" step="0.01" placeholder="-5.00 or 200.00" />
+          </div>
+          <div style="width:120px" class="field">
+            <label for="category">Category</label>
+            <select id="category">
+              <option value="Food">Food</option>
+              <option value="Transport">Transport</option>
+              <option value="Rent">Rent</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Income">Income</option>
+              <option value="Misc">Misc</option>
+            </select>
+          </div>
+        </div>
+        <div class="row" style="align-items:center;">
+          <input id="date" type="date" style="flex:1" />
+          <button class="btn" id="addBtn">Add</button>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn ghost" id="importSample">Load sample</button>
+        <button class="btn ghost" id="clearAll">Clear</button>
+      </div>
+
+      <footer class="note">Tip: use negative amounts for expenses (e.g., -12.50). Transactions are saved to your browser.</footer>
+    </aside>
+
+    <main class="main">
+      <div class="toprow">
+        <div style="display:flex;gap:12px;align-items:center;">
+          <h2 style="margin:0">Overview</h2>
+          <div class="small" id="subtitle">Monthly snapshot</div>
+        </div>
+        <div class="filters">
+          <select id="monthSelect" aria-label="Select month"></select>
+          <select id="catFilter" aria-label="Filter category">
+            <option value="all">All categories</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="panels">
+        <section class="card">
+          <h3 style="margin-top:0">Spending breakdown</h3>
+          <div class="chart-wrap">
+            <canvas id="donut" width="220" height="220" aria-label="spending donut chart"></canvas>
+            <div>
+              <div class="small">Top categories</div>
+              <div id="catList" style="margin-top:8px;display:flex;flex-direction:column;gap:8px"></div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <div class="small">Monthly budgets</div>
+            <div id="budgetBars" style="margin-top:8px;display:flex;flex-direction:column;gap:8px"></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h3 style="margin-top:0">Transactions</h3>
+          <div class="tx-list" id="txList">
+            <div class="empty">No transactions yet — add one on the left.</div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>// Lightweight Student Budget Book — single-file mockup
+// - localStorage persistence
+// - add/delete transactions
+// - monthly filter
+// - simple donut chart drawn on canvas
+
+const STORAGE_KEY = 'student_budget_book_v1';
+let store = { transactions: [] };
+
+// --- Utilities
+const el = (id) => document.getElementById(id);
+const format = (n) => (n>=0? '€' + n.toFixed(2) : '-€' + Math.abs(n).toFixed(2));
+const isoMonth = (d) => d.toISOString().slice(0,7);
+
+// --- Sample data
+const sample = [
+  {id:1,desc:'Part-time pay',amount:600.00,category:'Income',date:'2025-10-01'},
+  {id:2,desc:'Rent (share)',amount:-320.00,category:'Rent',date:'2025-10-05'},
+  {id:3,desc:'Groceries',amount:-45.60,category:'Food',date:'2025-10-07'},
+  {id:4,desc:'Coffee & snacks',amount:-8.50,category:'Food',date:'2025-10-09'},
+  {id:5,desc:'Bus pass',amount:-25.00,category:'Transport',date:'2025-10-10'},
+  {id:6,desc:'Movie night',amount:-12.00,category:'Entertainment',date:'2025-10-12'}
+];
+
+// --- Persistence
+function load(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    store = raw ? JSON.parse(raw) : {transactions:[]};
+  }catch(e){store={transactions:[]}};
+}
+function save(){localStorage.setItem(STORAGE_KEY, JSON.stringify(store));}
+
+// --- Rendering helpers
+function monthsInData(){
+  const months = new Set(store.transactions.map(t=>t.date.slice(0,7)));
+  return Array.from(months).sort((a,b)=>b.localeCompare(a));
+}
+
+function rebuildMonthSelect(){
+  const sel = el('monthSelect'); sel.innerHTML='';
+  const months = monthsInData();
+  const now = new Date();
+  const current = isoMonth(now);
+  // always include current month
+  if(!months.includes(current)) months.unshift(current);
+  months.forEach(m=>{
+    const opt = document.createElement('option'); opt.value=m; opt.textContent=new Date(m+'-01').toLocaleString(undefined,{month:'long',year:'numeric'});
+    sel.appendChild(opt);
+  });
+  sel.value = months[0] || current;
+}
+
+function categorySet(){
+  const s = new Set(store.transactions.map(t=>t.category));
+  return Array.from(s).sort();
+}
+
+function rebuildCategoryFilter(){
+  const f = el('catFilter'); f.innerHTML='<option value="all">All categories</option>';
+  ['Income','Rent','Food','Transport','Entertainment','Misc'].forEach(c=>{
+    const o = document.createElement('option'); o.value=c; o.textContent=c; f.appendChild(o);
+  });
+}
+
+function renderSummary(month){
+  const monthly = store.transactions.filter(t=>t.date.slice(0,7)===month);
+  const income = monthly.filter(t=>t.amount>0).reduce((s,t)=>s+t.amount,0);
+  const expenses = monthly.filter(t=>t.amount<0).reduce((s,t)=>s+t.amount,0);
+  const balance = income + expenses;
+  el('income').textContent = format(income);
+  el('expenses').textContent = format(Math.abs(expenses));
+  el('balance').textContent = format(balance);
+  el('monthLabel').textContent = new Date(month+'-01').toLocaleString(undefined,{month:'long',year:'numeric'});
+}
+
+function renderTxList(month,cat){
+  const wrap = el('txList'); wrap.innerHTML='';
+  let txs = store.transactions.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  txs = txs.filter(t=>t.date.slice(0,7)===month);
+  if(cat && cat!=='all') txs = txs.filter(t=>t.category===cat);
+  if(txs.length===0){wrap.innerHTML='<div class="empty">No transactions for this month and filter.</div>'; return}
+  txs.forEach(t=>{
+    const node = document.createElement('div'); node.className='tx';
+    const left = document.createElement('div'); left.className='left';
+    const chip = document.createElement('div'); chip.className='cat-chip'; chip.style.background = colorForCategory(t.category); chip.textContent = t.category[0] || '?';
+    const meta = document.createElement('div'); meta.className='meta';
+    const title = document.createElement('div'); title.textContent = t.desc || '(no description)';
+    const muted = document.createElement('div'); muted.className='muted'; muted.textContent = (new Date(t.date)).toLocaleDateString() + ' • ' + t.category;
+    meta.appendChild(title); meta.appendChild(muted);
+    left.appendChild(chip); left.appendChild(meta);
+    const right = document.createElement('div'); right.style.display='flex'; right.style.alignItems='center'; right.style.gap='12px';
+    const amt = document.createElement('div'); amt.className='amount'; amt.textContent = format(t.amount);
+    const del = document.createElement('button'); del.className='btn ghost'; del.textContent='Delete'; del.onclick = ()=>{ if(confirm('Delete this transaction?')){ store.transactions = store.transactions.filter(x=>x.id!==t.id); save(); refresh(); }};
+    right.appendChild(amt); right.appendChild(del);
+    node.appendChild(left); node.appendChild(right);
+    wrap.appendChild(node);
+  })
+}
+
+function colorForCategory(cat){
+  const map = {Income:'#064e3b', Rent:'#7c3aed', Food:'#b45309', Transport:'#0369a1', Entertainment:'#9f1239', Misc:'#334155'};
+  return map[cat]||'#334155';
+}
+
+// --- Donut chart (simple)
+function drawDonut(month,catFilter){
+  const canvas = el('donut'); const ctx = canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height);
+  const monthly = store.transactions.filter(t=>t.date.slice(0,7)===month && t.amount<0);
+  const byCat = {};
+  monthly.forEach(t=>{ if(catFilter && catFilter!=='all' && t.category!==catFilter) return; byCat[t.category] = (byCat[t.category]||0) + Math.abs(t.amount); });
+  const entries = Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
+  if(entries.length===0){ ctx.fillStyle='rgba(255,255,255,0.04)'; ctx.beginPath(); ctx.arc(110,110,80,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#fff'; ctx.font='14px sans-serif'; ctx.textAlign='center'; ctx.fillText('No expenses',110,115); el('catList').innerHTML=''; return }
+  const total = entries.reduce((s,e)=>s+e[1],0);
+  let angle = -Math.PI/2;
+  el('catList').innerHTML='';
+  entries.forEach(([c,v],i)=>{
+    const slice = v/total * Math.PI*2;
+    ctx.beginPath(); ctx.moveTo(110,110); ctx.arc(110,110,80,angle,angle+slice); ctx.closePath(); ctx.fillStyle = shadeColor(colorForCategory(c), i*10); ctx.fill();
+    angle += slice;
+    // list
+    const row = document.createElement('div'); row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center';
+    row.innerHTML = `<div style="display:flex;gap:8px;align-items:center"><div style='width:12px;height:12px;border-radius:3px;background:${colorForCategory(c)}'></div><div>${c}</div></div><div class="small">${Math.round(v/total*100)}% • ${format(-v)}</div>`;
+    el('catList').appendChild(row);
+  });
+  // inner cutout
+  ctx.fillStyle = 'rgba(7,12,22,0.95)'; ctx.beginPath(); ctx.arc(110,110,44,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font='700 14px sans-serif'; ctx.textAlign='center'; ctx.fillText(format(-total),110,116);
+}
+function shadeColor(hex, percent) {
+  // simple shade produced by blending with black (percent 0..100)
+  const c = hex.replace('#',''); const num = parseInt(c,16); let r = (num>>16); let g=(num>>8)&0x00FF; let b=num&0x0000FF;
+  r = Math.max(0, Math.min(255, Math.floor(r * (1 - percent/100)) ));
+  g = Math.max(0, Math.min(255, Math.floor(g * (1 - percent/100)) ));
+  b = Math.max(0, Math.min(255, Math.floor(b * (1 - percent/100)) ));
+  return '#' + ( (1<<24) + (r<<16) + (g<<8) + b ).toString(16).slice(1);
+}
+
+function renderBudgetBars(month){
+  // simple visual: recommended budgets for categories (student-focused)
+  const wrapper = el('budgetBars'); wrapper.innerHTML='';
+  const budgets = {Rent:350, Food:120, Transport:40, Entertainment:50, Misc:40};
+  Object.entries(budgets).forEach(([cat,amt])=>{
+    const spent = store.transactions.filter(t=>t.date.slice(0,7)===month && t.category===cat && t.amount<0).reduce((s,t)=>s+Math.abs(t.amount),0);
+    const pct = Math.min(100, Math.round(spent/amt*100));
+    const bar = document.createElement('div'); bar.innerHTML = `<div style="display:flex;justify-content:space-between"><div>${cat}</div><div class="small">${format(-spent)} / €${amt}</div></div><div style="height:10px;background:rgba(255,255,255,0.03);border-radius:8px;margin-top:6px;overflow:hidden"><div style="width:${pct}%;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));"></div></div>`;
+    wrapper.appendChild(bar);
+  });
+}
+
+// --- Actions
+function addTransaction(desc, amount, category, date){
+  const id = Date.now() + Math.floor(Math.random()*1000);
+  store.transactions.push({id,desc,amount:Number(amount),category,date});
+  save();
+}
+
+function refresh(){
+  rebuildMonthSelect();
+  rebuildCategoryFilter();
+  const month = el('monthSelect').value || isoMonth(new Date());
+  const cat = el('catFilter').value || 'all';
+  renderSummary(month);
+  renderTxList(month,cat);
+  drawDonut(month,cat);
+  renderBudgetBars(month);
+}
+
+// --- init UI
+function init(){
+  load();
+  // populate selects
+  rebuildCategoryFilter();
+  // set date default to today
+  el('date').value = new Date().toISOString().slice(0,10);
+
+  // events
+  el('addBtn').addEventListener('click', ()=>{
+    const desc = el('desc').value.trim(); const amt = parseFloat(el('amount').value);
+    const cat = el('category').value; const date = el('date').value || new Date().toISOString().slice(0,10);
+    if(isNaN(amt)) { alert('Enter a valid amount (use negative for expenses).'); return }
+    addTransaction(desc||cat, amt, cat, date);
+    // quick clear
+    el('desc').value=''; el('amount').value='';
+    refresh();
+  });
+  el('importSample').addEventListener('click', ()=>{ if(confirm('Load sample data? This will append to current data.')){ sample.forEach(s=>store.transactions.push(Object.assign({},s,{id:Date.now()+Math.random()*10000}))); save(); refresh(); }});
+  el('clearAll').addEventListener('click', ()=>{ if(confirm('Clear all stored transactions?')){ store.transactions = []; save(); refresh(); }});
+  el('monthSelect').addEventListener('change', ()=>refresh());
+  el('catFilter').addEventListener('change', ()=>refresh());
+
+  // initial render
+  if(store.transactions.length===0){ // set date-aware month label
+    // default month select will include current month
+  }
+  refresh();
+}
+
+// run
+init();</script>
+</body>
+</html>
