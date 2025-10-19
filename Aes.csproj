@@ -14,10 +14,15 @@
 
   <ItemGroup>
     <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.10" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Images\MizeMau.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Database\View\" />
   </ItemGroup>
 
 </Project>

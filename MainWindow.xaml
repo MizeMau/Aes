@@ -51,6 +51,89 @@
                             €188.90
                         </TextBlock>
                         <TextBlock>October 2025</TextBlock>
+                        <Separator/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" 
+                                       Grid.Column="0" 
+                                       VerticalAlignment="Center" >
+                                Income
+                            </TextBlock>
+                            <TextBlock Grid.Row="1" 
+                                       Grid.Column="0" 
+                                       VerticalAlignment="Center" >
+                                €600,00
+                            </TextBlock>
+                            <TextBlock Grid.Row="0" 
+                                       Grid.Column="1" 
+                                       VerticalAlignment="Center" >
+                                Expenses
+                            </TextBlock>
+                            <TextBlock Grid.Row="1" 
+                                       Grid.Column="1" 
+                                       VerticalAlignment="Center" >
+                                €411,10
+                            </TextBlock>
+                        </Grid>
+                        <Separator/>
+                        <TextBlock>Note</TextBlock>
+                        <TextBox></TextBox>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" 
+                                       Grid.Column="0" 
+                                       VerticalAlignment="Center" >
+                                Amount
+                            </TextBlock>
+                            <TextBox Grid.Row="1" 
+                                     Grid.Column="0" ></TextBox>
+                            <TextBlock Grid.Row="0" 
+                                       Grid.Column="1" 
+                                       VerticalAlignment="Center" >
+                                Category
+                            </TextBlock>
+                            <Grid Grid.Row="1" Grid.Column="1">
+                                <ComboBox ItemsSource="{Binding Categories}"
+                                          DisplayMemberPath="Name"
+                                          SelectedItem="{Binding SelectedCategory, Mode=TwoWay}" />
+                            </Grid>
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <DatePicker Grid.Row="0" 
+                                        Grid.Column="0" >
+
+                            </DatePicker>
+                            <Button Click="test"
+                                    Grid.Row="0" 
+                                    Grid.Column="1" >
+                                Add
+                            </Button>
+                        </Grid>
+                        <Separator/>
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -95,10 +178,25 @@
                                            FontWeight="Bold">
                                     Monthly budgets
                                 </TextBlock>
-                                <TextBlock>Rent</TextBlock>
-                                <Grid>
-                                    <ProgressBar x:Name="progressBar" Value="60" Maximum="100" Height="20"/>
-                                </Grid>
+                                <ItemsControl ItemsSource="{Binding Payments}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Margin="0,10,0,10">
+                                                <DockPanel>
+                                                    <TextBlock Text="{Binding Title}" />
+                                                    <TextBlock Text="{Binding AmountText}"
+                                                               TextAlignment="Right"
+                                                               VerticalAlignment="Bottom"
+                                                               FontSize="20"
+                                                               DockPanel.Dock="Right"/>
+                                                </DockPanel>
+                                                <ProgressBar Value="{Binding Progress}"
+                                                             Maximum="{Binding Max}"
+                                                             Height="20"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </StackPanel>
                         </Border>
                         <Border BorderBrush="Gray" 
@@ -106,10 +204,49 @@
                                 CornerRadius="10" 
                                 Padding="20" 
                                 Margin="10">
-                            <TextBlock Foreground="White"
-                                       FontWeight="Bold">
-                                Transactions
-                            </TextBlock>
+                            <StackPanel>
+                                <TextBlock Foreground="White"
+                                           FontWeight="Bold">
+                                    Transactions
+                                </TextBlock>
+                                <ItemsControl ItemsSource="{Binding Transactions}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border BorderBrush="Gray" 
+                                                    BorderThickness="1" 
+                                                    CornerRadius="10"
+                                                    Padding="5"
+                                                    Margin="0,0,0,10">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <StackPanel Grid.Row="0" 
+                                                                Grid.Column="0">
+                                                        <TextBlock Text="{Binding Note}"/>
+                                                        <TextBlock Text="{Binding DateText}"
+                                                                   FontSize="18"/>
+                                                        <TextBlock Text="{Binding CategoryName}"
+                                                                   FontSize="18"/>
+                                                    </StackPanel>
+                                                    <TextBlock Grid.Row="0" 
+                                                               Grid.Column="1"
+                                                               Foreground="{Binding Color}"
+                                                               Text="{Binding AmountText}"
+                                                               Margin="40,0,20,0"/>
+                                                    <Button Click="DeleteTransaction"
+                                                            Grid.Row="0" 
+                                                            Grid.Column="2">
+                                                        Delete
+                                                    </Button>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
                         </Border>
                     </StackPanel>
                 </StackPanel>

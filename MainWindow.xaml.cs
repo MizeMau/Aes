@@ -1,7 +1,13 @@
-﻿using LiveCharts;
+﻿using Aes.Model;
+using LiveCharts;
 using LiveCharts.Definitions.Charts;
 using LiveCharts.Definitions.Series;
 using LiveCharts.Wpf;
+using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,16 +24,46 @@ namespace Aes
 {
     public partial class MainWindow : Window
     {
-        private readonly DispatcherTimer _timer = new DispatcherTimer();
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new ViewModel();
             this.pieChart.DataHover += PieChart_DataHover;
 
-            _timer.Interval = TimeSpan.FromMilliseconds(50);
-            _timer.Tick += UpdateProgress;
-            _timer.Start();
+#if DEBUG
+            var transactionCategoryService = new Database.Table.Transaction.Category.Service();
+            var transactionRecurringService = new Database.Table.Transaction.Recurring.Service();
+            var transactionTransactionService = new Database.Table.Transaction.Transaction.Service();
+
+            if (!transactionCategoryService.GetQuery().Any())
+            {
+                var categories = new List<Database.Table.Transaction.Category.Model>
+                {
+                    new Database.Table.Transaction.Category.Model { Name = "Food", PlannedAmount = 100, Type = Database.Table.Transaction.Category.Type.Expense, Color = "#FF5733" },
+                    new Database.Table.Transaction.Category.Model { Name = "Salary", Type = Database.Table.Transaction.Category.Type.Income, Color = "#33FF57" },
+                    new Database.Table.Transaction.Category.Model { Name = "Entertainment", PlannedAmount = 40, Type = Database.Table.Transaction.Category.Type.Expense, Color = "#3357FF" },
+                    new Database.Table.Transaction.Category.Model { Name = "Rent", PlannedAmount = 650, Type = Database.Table.Transaction.Category.Type.Expense, Color = "#7c5cff" },
+                };
+                transactionCategoryService.CreateRange(categories);
+            }
+
+            if (!transactionTransactionService.GetQuery().Any())
+            {
+                var transactions = new List<Database.Table.Transaction.Transaction.Model>
+                {
+                    new Database.Table.Transaction.Transaction.Model { Amount = 1000, Note = "Monthly Salary", Date = DateOnly.FromDateTime(DateTime.Now), TransactionCategoryID = 2 },
+                    new Database.Table.Transaction.Transaction.Model { Amount = 50, Note = "Groceries", Date = DateOnly.FromDateTime(DateTime.Now), TransactionCategoryID = 1 },
+                    new Database.Table.Transaction.Transaction.Model { Amount = 20, Note = "Movie Ticket", Date = DateOnly.FromDateTime(DateTime.Now), TransactionCategoryID = 3 },
+                    new Database.Table.Transaction.Transaction.Model { Amount = 600, Note = "Movie Ticket", Date = DateOnly.FromDateTime(DateTime.Now), TransactionCategoryID = 4 },
+                };
+                transactionTransactionService.CreateRange(transactions);
+            }
+            //var recurrings = new List<Database.Table.Transaction.Recurring.Model>
+            //{
+            //    new Database.Table.Transaction.Recurring.Model { StartDate = DateOnly.FromDateTime(DateTime.Now), FrequencyType = Database.Table.Transaction.Recurring.FrequencyType.Monthly, FrequencyInterval = 1 },
+            //    new Database.Table.Transaction.Recurring.Model { StartDate = DateOnly.FromDateTime(DateTime.Now), FrequencyType = Database.Table.Transaction.Recurring.FrequencyType.Weekly, FrequencyInterval = 1 }
+            //};
+#endif
+            DataContext = new ViewModel();
         }
         private void PieChart_DataHover(object sender, ChartPoint chartPoint)
         {
@@ -35,29 +71,102 @@ namespace Aes
             this.myCustomTooltip.Value = $"{chartPoint.Y}€ ({chartPoint.Participation:P0})";
             this.myCustomTooltip.Fill = pieSeries!.Fill;
         }
-        private void UpdateProgress(object? sender, EventArgs e)
+        private void test(object? sender, EventArgs e)
         {
-            progressBar.Value += 2;
-            if (progressBar.Value >= progressBar.Maximum)
-                progressBar.Value = progressBar.Minimum;
+            if (!(DataContext is ViewModel))
+                return;
+
+            var transactionCategoryService = new Database.Table.Transaction.Category.Service();
+            var test = transactionCategoryService.GetAll();
+
+            var vm = (ViewModel)DataContext;
+            var firstPayment = vm.Payments[0];
+            firstPayment.Progress += 10;
+        }
+        private void DeleteTransaction(object? sender, EventArgs e)
+        {
+            if (!(DataContext is ViewModel))
+                return;
+
+            var transactionCategoryService = new Database.Table.Transaction.Category.Service();
+            var test = transactionCategoryService.GetAll();
+
+            var vm = (ViewModel)DataContext;
+            var firstPayment = vm.Payments[0];
+            firstPayment.Progress += 10;
         }
     }
 
     public class ViewModel
     {
         public SeriesCollection SeriesCollection { get; set; }
-
-
+        public ObservableCollection<PaymentProgress> Payments { get; set; }
+        public ObservableCollection<Transaction> Transactions { get; set; }
+        public List<Database.Table.Transaction.Category.Model> Categories {get; set; }
+        private Database.Table.Transaction.Category.Model _selectedCategory;
+        public Database.Table.Transaction.Category.Model SelectedCategory
+        {
+            get => _selectedCategory;
+            set { _selectedCategory = value; OnPropertyChanged(nameof(SelectedCategory)); }
+        }
         public ViewModel()
         {
-            SeriesCollection = new SeriesCollection
+            var transactionCategoryService = new Database.Table.Transaction.Category.Service();
+            var transactionTransactionService = new Database.Table.Transaction.Transaction.Service();
+
+            Categories = transactionCategoryService.GetAll();
+            var transactions = transactionTransactionService.GetAllByMonth();
+            var transactionsDict = transactions
+                .GroupBy(g => g.TransactionCategoryID)
+                .Select(s => new
+                {
+                    CategoryID = s.Key,
+                    TotalAmount = s.Sum(sum => sum.Amount)
+                })
+                .ToDictionary(d => d.CategoryID, d => d.TotalAmount);
+            var pieSeries = Categories.Where(w => w.Type == Database.Table.Transaction.Category.Type.Expense)
+                .Select(s => {
+                    return new PieSeries
+                    {
+                        Title = s.Name,
+                        Fill = (SolidColorBrush)new BrushConverter().ConvertFrom(s.Color)!,
+                        Values = new ChartValues<decimal> { transactionsDict[s.TransactionCategoryID] }
+                    };
+            });
+            SeriesCollection = [
+                .. pieSeries,
+            ];
+
+            var payments = new ObservableCollection<PaymentProgress>();
+            Categories.Where(w => w.Type == Database.Table.Transaction.Category.Type.Expense)
+                .ToList()
+                .ForEach(f =>
+                {
+                    payments.Add(new PaymentProgress
+                    {
+                        Title = f.Name,
+                        Max = f.PlannedAmount,
+                        Progress = transactionsDict[f.TransactionCategoryID]
+                    });
+                });
+            Payments = payments;
+
+            var transactionsCollection = new ObservableCollection<Transaction>();
+            foreach (var transcation in transactions)
             {
-                new PieSeries { Title = "Mary",  Values = new ChartValues<double> { 10 }, Fill = (SolidColorBrush)new BrushConverter().ConvertFrom("#FFFFFF")!},
-                new PieSeries { Title = "John",  Values = new ChartValues<double> { 20 }},
-                new PieSeries { Title = "Alice", Values = new ChartValues<double> { 30 }},
-                new PieSeries { Title = "Bob",   Values = new ChartValues<double> { 40 }},
-                new PieSeries { Title = "Charlie", Values = new ChartValues<double> { 50 }},
-            };
+                var category = Categories.Single(s => s.TransactionCategoryID == transcation.TransactionCategoryID);
+                transactionsCollection.Add(new Transaction()
+                {
+                    Note = transcation.Note,
+                    Date = transcation.Date,
+                    CategoryName = category.Name,
+                    Amount = transcation.Amount,
+                    CategoryType = category.Type,
+                });
+            }
+            Transactions = transactionsCollection;
         }
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }
