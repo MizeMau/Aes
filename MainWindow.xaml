@@ -54,10 +54,10 @@
                     <StackPanel Orientation="Vertical"
                                 Margin="0,20,0,0">
                         <TextBlock>Available balance</TextBlock>
-                        <TextBlock Foreground="White"
-                                   FontWeight="Bold">
-                            €188.90
-                        </TextBlock>
+                    <TextBlock Foreground="White"
+                                   FontWeight="Bold"
+                                   Text="{Binding RemainderText}">
+                    </TextBlock>
                         <TextBlock>October 2025</TextBlock>
                         <Separator/>
                         <Grid>
@@ -75,21 +75,21 @@
                                        VerticalAlignment="Center" >
                                 Income
                             </TextBlock>
-                            <TextBlock Grid.Row="1" 
+                        <TextBlock Grid.Row="1" 
                                        Grid.Column="0" 
-                                       VerticalAlignment="Center" >
-                                €600,00
-                            </TextBlock>
-                            <TextBlock Grid.Row="0" 
+                                       VerticalAlignment="Center" 
+                                       Text="{Binding IncomeText}">
+                        </TextBlock>
+                        <TextBlock Grid.Row="0" 
                                        Grid.Column="1" 
                                        VerticalAlignment="Center" >
-                                Expenses
-                            </TextBlock>
-                            <TextBlock Grid.Row="1" 
+                            Expense
+                        </TextBlock>
+                        <TextBlock Grid.Row="1" 
                                        Grid.Column="1" 
-                                       VerticalAlignment="Center" >
-                                €411,10
-                            </TextBlock>
+                                       VerticalAlignment="Center"
+                                       Text="{Binding ExpenseText}" >
+                        </TextBlock>
                         </Grid>
                         <Separator/>
                         <TextBlock>Note</TextBlock>
@@ -100,7 +100,8 @@
                                  Width="640"
                                  TextWrapping="Wrap"
                                  HorizontalScrollBarVisibility="Disabled"
-                                 VerticalScrollBarVisibility="Auto">
+                                 VerticalScrollBarVisibility="Auto"
+                                 CaretBrush="White">
                             <TextBox.Resources>
                                 <Style TargetType="{x:Type Border}">
                                     <Setter Property="CornerRadius" Value="10"/>
@@ -117,37 +118,44 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0" 
+                        <TextBlock Grid.Row="0" 
                                        Grid.Column="0" 
                                        VerticalAlignment="Center" >
                                 Amount
-                            </TextBlock>
-                            <TextBox Grid.Row="1" 
-                                     Grid.Column="0" 
-                                     Background="Transparent"
-                                     Foreground="White"
-                                     Padding="10"
-                                     Margin="0,0,10,10">
+                        </TextBlock>
+                        <TextBox Grid.Row="1"
+                                 Grid.Column="0"
+                                 Background="Transparent"
+                                 Foreground="White"
+                                 Padding="10"
+                                 Margin="0,0,10,10"
+                                 CaretBrush="White"
+                                 PreviewTextInput="MoneyTextBox_PreviewTextInput"
+                                 TextChanged="MoneyTextBox_TextChanged"
+                                 HorizontalContentAlignment="Right"
+                                 Text="0 €"
+                                 Width="320">
                             <TextBox.Resources>
                                 <Style TargetType="{x:Type Border}">
                                     <Setter Property="CornerRadius" Value="10"/>
                                 </Style>
                             </TextBox.Resources>
                         </TextBox>
-                            <TextBlock Grid.Row="0" 
+
+                        <TextBlock Grid.Row="0" 
                                        Grid.Column="1" 
                                        VerticalAlignment="Center" >
                                 Category
                             </TextBlock>
                         <Grid Grid.Row="1" Grid.Column="1">
                             <ComboBox Margin="0,0,0,10"
-                                 Padding="6"
-                                 ItemsSource="{Binding Categories}"
-                                 SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
-                                 Foreground="White"
-                                 Background="Transparent"
-                                 BorderBrush="#afafaf"
-                                 BorderThickness="1">
+                                      Padding="6"
+                                      ItemsSource="{Binding Categories}"
+                                      SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
+                                      Foreground="White"
+                                      Background="Transparent"
+                                      BorderBrush="#afafaf"
+                                      BorderThickness="1">
                                 <ComboBox.Template>
                                     <ControlTemplate TargetType="ComboBox">
                                         <Grid>
@@ -244,27 +252,84 @@
 
                         </Grid>
                         </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                            <DatePicker Grid.Row="0" 
-                                        Grid.Column="0" >
+                        <DatePicker Grid.Row="0" Grid.Column="0"
+                                    SelectedDate="{Binding SelectedDate, Mode=TwoWay}">
+                            <DatePicker.Resources>
+                                <!-- Hide the default textbox -->
+                                <Style TargetType="DatePickerTextBox">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </Style>
+                            </DatePicker.Resources>
 
-                            </DatePicker>
-                            <Button Click="test"
-                                    Grid.Row="0" 
-                                    Grid.Column="1" >
-                                Add
-                            </Button>
-                        </Grid>
-                        <Separator/>
-                    </StackPanel>
+                            <DatePicker.Template>
+                                <ControlTemplate TargetType="DatePicker">
+                                    <Grid>
+                                        <ToggleButton x:Name="PART_Button"
+                                                      Background="Transparent"
+                                                      Foreground="White"
+                                                      BorderBrush="#afafaf"
+                                                      BorderThickness="1"
+                                                      Padding="10"
+                                                      HorizontalContentAlignment="Left"
+                                                      Margin="0,0,10,0">
+                                            <ToggleButton.Resources>
+                                                <Style TargetType="{x:Type Border}">
+                                                    <Setter Property="CornerRadius" Value="10"/>
+                                                </Style>
+                                            </ToggleButton.Resources>
+                                            <TextBlock Text="{Binding SelectedDate, RelativeSource={RelativeSource TemplatedParent}, StringFormat={}{0:dd/MM/yyyy}}"/>
+                                        </ToggleButton>
+
+                                        <!-- Popup -->
+                                        <Popup x:Name="PART_Popup"
+                                               Placement="Bottom"
+                                               AllowsTransparency="True"
+                                               Focusable="False"
+                                               IsOpen="{Binding IsChecked, ElementName=PART_Button, Mode=TwoWay}">
+                                            <Border Background="#222222EE"
+                                                    BorderBrush="White"
+                                                    BorderThickness="1"
+                                                    CornerRadius="10"
+                                                    Padding="10"
+                                                    SnapsToDevicePixels="True">
+                                                <Calendar x:Name="PART_Calendar"
+                                                          SelectedDate="{Binding SelectedDate, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                                          Background="#222222"
+                                                          Foreground="White"/>
+                                            </Border>
+                                        </Popup>
+                                    </Grid>
+                                </ControlTemplate>
+                            </DatePicker.Template>
+                        </DatePicker>
+
+
+                        <Button Click="test"
+                                Grid.Row="0" 
+                                Grid.Column="1"
+                                Background="Transparent"
+                                Foreground="White"
+                                BorderBrush="#afafaf"
+                                BorderThickness="1"
+                                Padding="10,5,10,5">
+                            <Button.Resources>
+                                <Style TargetType="{x:Type Border}">
+                                    <Setter Property="CornerRadius" Value="10"/>
+                                </Style>
+                            </Button.Resources>
+                            Add
+                        </Button>
+                    </Grid>
+                </StackPanel>
                 </StackPanel>
             </Border>
             <Border Grid.Column="1"
@@ -369,31 +434,66 @@
                                                 <Border BorderBrush="Gray" 
                                                         BorderThickness="1" 
                                                         CornerRadius="10"
-                                                        Padding="5"
                                                         Margin="0,0,0,10">
                                                     <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="*" />
-                                                            <ColumnDefinition Width="Auto" />
-                                                            <ColumnDefinition Width="Auto" />
-                                                        </Grid.ColumnDefinitions>
-                                                        <StackPanel Grid.Row="0" 
-                                                                    Grid.Column="0">
-                                                            <TextBlock Text="{Binding Note}"/>
-                                                            <TextBlock Text="{Binding DateText}"
-                                                                       FontSize="18"/>
-                                                            <TextBlock Text="{Binding CategoryName}"
-                                                                       FontSize="18"/>
-                                                        </StackPanel>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid Grid.Row="0" 
+                                                          Grid.Column="0">
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                        </Grid.RowDefinitions>
                                                         <TextBlock Grid.Row="0" 
+                                                                   Grid.Column="0" 
+                                                                   Padding="5,0,0,0"
+                                                                   Text="{Binding Note}"/>
+                                                        <TextBlock Grid.Row="1" 
+                                                                   Grid.Column="0" 
+                                                                   Padding="5,0,0,0"
+                                                                   Text="{Binding DateText}"
+                                                                   FontSize="18"/>
+                                                        <Grid Grid.Row="2" 
+                                                              Grid.Column="0" >
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition Width="*" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <Ellipse Width="19" 
+                                                                     Height="19" Fill="White" 
+                                                                     Margin="5,5,5,5"/>
+                                                            <Ellipse Width="15" 
+                                                                     Height="15" Fill="{Binding Category.Color}" 
+                                                                     Margin="5,0,5,0"/>
+                                                            <TextBlock Grid.Row="0" 
+                                                                       Grid.Column="1" 
+                                                                       Text="{Binding Category.Name}"
+                                                                       FontSize="18"/>
+                                                        </Grid>
+                                                    </Grid>
+                                                    <TextBlock Grid.Row="0" 
                                                                    Grid.Column="1"
                                                                    Foreground="{Binding Color}"
                                                                    Text="{Binding AmountText}"
                                                                    Margin="40,0,20,0"/>
-                                                        <Button Click="DeleteTransaction"
+                                                    <Button Click="DeleteTransaction"
                                                                 Grid.Row="0" 
-                                                                Grid.Column="2">
-                                                            Delete
+                                                                Grid.Column="3"
+                                                                Padding="10,5,10,5"
+                                                                Background="Transparent"
+                                                                Foreground="White"
+                                                                BorderThickness="1,0,0,0">
+                                                        <Button.Resources>
+                                                            <Style TargetType="{x:Type Border}">
+                                                                <Setter Property="CornerRadius" Value="0,10,10,0"/>
+                                                            </Style>
+                                                        </Button.Resources>
+                                                        Delete
                                                         </Button>
                                                     </Grid>
                                                 </Border>
@@ -423,7 +523,7 @@
                                     Background="Transparent"
                                     CornerRadius="10">
                                 <Border x:Name="PART_Indicator"
-                                        Background="#AF4C50"
+                                        Background="#4CAF50"
                                         CornerRadius="10"
                                         HorizontalAlignment="Left"
                                         Width="0"/>
@@ -431,7 +531,7 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsIndeterminate" Value="True">
-                                <Setter TargetName="PART_Indicator" Property="Background" Value="#AF4C50"/>
+                                <Setter TargetName="PART_Indicator" Property="Background" Value="#4CAF50"/>
                             </Trigger>
                             <Trigger Property="Orientation" Value="Vertical">
                                 <Setter TargetName="Root" Property="LayoutTransform">

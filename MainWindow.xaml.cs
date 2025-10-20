@@ -6,9 +6,11 @@ using LiveCharts.Wpf;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -19,6 +21,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Xml.Linq;
 
 namespace Aes
 {
@@ -88,12 +91,48 @@ namespace Aes
             if (!(DataContext is ViewModel))
                 return;
 
-            var transactionCategoryService = new Database.Table.Transaction.Category.Service();
-            var test = transactionCategoryService.GetAll();
-
             var vm = (ViewModel)DataContext;
             var firstPayment = vm.Payments[0];
             firstPayment.Progress += 10;
+        }
+        private void MoneyTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            // Only allow digits and comma/period
+            e.Handled = !Regex.IsMatch(e.Text, @"[\d,\.]");
+        }
+
+        private void MoneyTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var textBox = sender as TextBox;
+
+            if (textBox == null) return;
+
+            string valueString = textBox.Text.Replace(" €", "").Trim();
+            valueString = Regex.Replace(valueString, @"[^\d,\.]", "");
+
+            decimal value = 0;
+            var culture = CultureInfo.CreateSpecificCulture("de-DE");
+            // Try to parse the numeric part
+            if (decimal.TryParse(valueString, NumberStyles.Number, culture, out value))
+            {
+                string comma = "";
+
+                // Check for trailing comma or period
+                if (!string.IsNullOrEmpty(valueString) &&
+                    (valueString[^1] == ',' || valueString[^1] == '.'))
+                {
+                    comma = ",";
+                }
+
+                textBox.Text = $"{value.ToString(culture)}{comma} €";
+            }
+            else
+            {
+                textBox.Text = "0 €";
+            }
+
+            // Move the caret just before the € symbol
+            textBox.CaretIndex = textBox.Text.Length - 2;
         }
     }
 
@@ -109,15 +148,69 @@ namespace Aes
             get => _selectedCategory;
             set { _selectedCategory = value; OnPropertyChanged(nameof(SelectedCategory)); }
         }
+        private DateTime? _selectedDate;
+        public DateTime? SelectedDate
+        {
+            get => _selectedDate;
+            set { _selectedDate = value; OnPropertyChanged(nameof(SelectedDate)); }
+        }
+
+        private decimal _expense;
+        public decimal Expense
+        {
+            get => _expense;
+            set { _expense = value; OnPropertyChanged(nameof(Expense)); OnPropertyChanged(nameof(ExpenseText)); OnPropertyChanged(nameof(RemainderText)); }
+        }
+        private decimal _income;
+        public decimal Income
+        {
+            get => _income;
+            set { _income = value; OnPropertyChanged(nameof(Income)); OnPropertyChanged(nameof(IncomeText)); OnPropertyChanged(nameof(RemainderText)); }
+        }
+        public string IncomeText => $"€{Income}";
+        public string ExpenseText => $"€{Expense}";
+        public string RemainderText => $"€{Income - Expense}";
         public ViewModel()
         {
             var transactionCategoryService = new Database.Table.Transaction.Category.Service();
             var transactionTransactionService = new Database.Table.Transaction.Transaction.Service();
-
             Categories = transactionCategoryService.GetAll();
             SelectedCategory = Categories[0];
+            SelectedDate = DateTime.Now;
+
             var transactions = transactionTransactionService.GetAllByMonth()
-                .OrderByDescending(o => (o.Date, o.TransactionTransactionID));
+                .OrderByDescending(o => (o.Date, o.TransactionTransactionID))
+                .ToList();
+
+            var transactionsDict = transactions
+                .GroupBy(g => g.TransactionCategoryID)
+                .Select(s => new
+                {
+                    CategoryID = s.Key,
+                    TotalAmount = s.Sum(sum => sum.Amount)
+                })
+                .ToDictionary(d => d.CategoryID, d => d.TotalAmount);
+            decimal income = 0;
+            decimal expense = 0;
+            foreach (var dict in transactionsDict)
+            {
+                var category = Categories.Single(s => s.TransactionCategoryID == dict.Key);
+                switch (category.Type)
+                {
+                    case Database.Table.Transaction.Category.Type.Income:
+                        income += dict.Value;
+                        break;
+                    case Database.Table.Transaction.Category.Type.Expense:
+                        expense += dict.Value;
+                        break;
+                }
+            }
+            Expense = expense;
+            Income = income;
+            SetOverviewData(transactions);
+        }
+        private void SetOverviewData(List<Database.Table.Transaction.Transaction.Model> transactions)
+        {
             var transactionsDict = transactions
                 .GroupBy(g => g.TransactionCategoryID)
                 .Select(s => new
@@ -134,7 +227,7 @@ namespace Aes
                         Fill = (SolidColorBrush)new BrushConverter().ConvertFrom(s.Color)!,
                         Values = new ChartValues<decimal> { transactionsDict[s.TransactionCategoryID] }
                     };
-            });
+                });
             SeriesCollection = [
                 .. pieSeries,
             ];
@@ -161,9 +254,8 @@ namespace Aes
                 {
                     Note = transcation.Note,
                     Date = transcation.Date,
-                    CategoryName = category.Name,
+                    Category = category,
                     Amount = transcation.Amount,
-                    CategoryType = category.Type,
                 });
             }
             Transactions = transactionsCollection;
