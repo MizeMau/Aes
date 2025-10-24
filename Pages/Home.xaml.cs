@@ -139,6 +139,19 @@ namespace Aes.Pages
             // Move the caret just before the € symbol
             textBox.CaretIndex = textBox.Text.Length - 2;
         }
+        private void MoneyTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            var textBox = sender as TextBox;
+            if (textBox != null)
+            {
+                // Delay the caret positioning until after focus is fully applied
+                textBox.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    textBox.CaretIndex = textBox.Text.Length - 2; // Or textBox.SelectAll();
+                }), System.Windows.Threading.DispatcherPriority.Input);
+            }
+        }
+
     }
     public class ViewModel
     {
