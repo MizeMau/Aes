@@ -4,548 +4,85 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Aes"
-        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"        
         mc:Ignorable="d"
         Background="#0f1724"
         Foreground="#98a0b3"
         FontSize="30"
-        Title="MainWindow" 
-        Height="1080" 
-        Width="1920">
+        Title="Aes"
+        Height="1080"
+        Width="1920"
+        WindowStartupLocation="CenterScreen">
+
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        
-        <Border Grid.Column="0"
-                BorderBrush="Gray" 
-                BorderThickness="1" 
-                CornerRadius="10" 
-                Padding="20" 
-                Margin="10"
-                SnapsToDevicePixels="True" ClipToBounds="False">
-                <Border.Background>
-                    <SolidColorBrush Opacity="0.17" Color="#000" />
-                </Border.Background>
-                <Border.Effect>
-                    <DropShadowEffect />
-                </Border.Effect>
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Border CornerRadius="20" Width="100" Height="100">
-                            <Border.Background>
-                                <ImageBrush ImageSource="/Images/MizeMau.png"
-                                            Stretch="UniformToFill"/>
-                            </Border.Background>
-                        </Border>
-                        <StackPanel>
-                            <TextBlock FontWeight="Bold"
-                                       Margin="20,0,20,0"
-                                       FontSize="50"
-                                       Foreground="White">
-                                Student Budget Book
-                            </TextBlock>
-                            <TextBlock Margin="20,0,20,0">
-                                Simple, focused — for students
-                            </TextBlock>
-                        </StackPanel>
-                    </StackPanel>
-                    <StackPanel Orientation="Vertical"
-                                Margin="0,20,0,0">
-                        <TextBlock>Available balance</TextBlock>
-                    <TextBlock Foreground="White"
-                                   FontWeight="Bold"
-                                   Text="{Binding RemainderText}">
-                    </TextBlock>
-                        <TextBlock>October 2025</TextBlock>
-                        <Separator/>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
+        <!-- Main Content Area -->
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
 
-                            <TextBlock Grid.Row="0" 
-                                       Grid.Column="0" 
-                                       VerticalAlignment="Center" >
-                                Income
-                            </TextBlock>
-                        <TextBlock Grid.Row="1" 
-                                       Grid.Column="0" 
-                                       VerticalAlignment="Center" 
-                                       Text="{Binding IncomeText}">
-                        </TextBlock>
-                        <TextBlock Grid.Row="0" 
-                                       Grid.Column="1" 
-                                       VerticalAlignment="Center" >
-                            Expense
-                        </TextBlock>
-                        <TextBlock Grid.Row="1" 
-                                       Grid.Column="1" 
-                                       VerticalAlignment="Center"
-                                       Text="{Binding ExpenseText}" >
-                        </TextBlock>
-                        </Grid>
-                        <Separator/>
-                    <TextBlock>Note</TextBlock>
-                    <TextBox     Text="{Binding Note}"
-                                 Background="Transparent"
-                                 Foreground="White"
-                                 Padding="10"
-                                 Height="350"
-                                 Width="640"
-                                 TextWrapping="Wrap"
-                                 HorizontalScrollBarVisibility="Disabled"
-                                 VerticalScrollBarVisibility="Auto"
-                                 CaretBrush="White">
-                            <TextBox.Resources>
-                                <Style TargetType="{x:Type Border}">
-                                    <Setter Property="CornerRadius" Value="10"/>
-                                </Style>
-                            </TextBox.Resources>
-                        </TextBox>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
+        <!-- Top Bar -->
+        <Grid Background="Transparent" Height="60" VerticalAlignment="Top">
 
-                        <TextBlock Grid.Row="0" 
-                                       Grid.Column="0" 
-                                       VerticalAlignment="Center" >
-                                Amount
-                        </TextBlock>
-                        <TextBox Grid.Row="1"
-                                 Grid.Column="0"
-                                 Background="Transparent"
-                                 Foreground="White"
-                                 Padding="10"
-                                 Margin="0,0,10,10"
-                                 CaretBrush="White"
-                                 PreviewTextInput="MoneyTextBox_PreviewTextInput"
-                                 TextChanged="MoneyTextBox_TextChanged"
-                                 HorizontalContentAlignment="Right"
-                                 Text="{Binding Amount}"
-                                 Width="320">
-                            <TextBox.Resources>
-                                <Style TargetType="{x:Type Border}">
-                                    <Setter Property="CornerRadius" Value="10"/>
-                                </Style>
-                            </TextBox.Resources>
-                        </TextBox>
-
-                        <TextBlock Grid.Row="0" 
-                                       Grid.Column="1" 
-                                       VerticalAlignment="Center" >
-                                Category
-                            </TextBlock>
-                        <Grid Grid.Row="1" Grid.Column="1">
-                            <ComboBox Margin="0,0,0,10"
-                                      Padding="6"
-                                      ItemsSource="{Binding Categories}"
-                                      SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
-                                      Foreground="White"
-                                      Background="Transparent"
-                                      BorderBrush="#afafaf"
-                                      BorderThickness="1">
-                                <ComboBox.Template>
-                                    <ControlTemplate TargetType="ComboBox">
-                                        <Grid>
-                                            <ToggleButton x:Name="PART_Button"
-                                                          Grid.Column="0"
-                                                          Background="{TemplateBinding Background}"
-                                                          BorderBrush="{TemplateBinding BorderBrush}"
-                                                          BorderThickness="{TemplateBinding BorderThickness}"
-                                                          Focusable="False"
-                                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                                          Padding="{TemplateBinding Padding}">
-                                                <ToggleButton.Resources>
-                                                    <Style TargetType="{x:Type Border}">
-                                                        <Setter Property="CornerRadius" Value="10"/>
-                                                    </Style>
-                                                </ToggleButton.Resources>
-                                                <Grid Width="300">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <TextBlock Grid.Column="0"
-                                                               Margin="6,0,25,0"
-                                                               VerticalAlignment="Center"
-                                                               Text="{Binding SelectedItem.Name, RelativeSource={RelativeSource TemplatedParent}}"
-                                                               Foreground="{TemplateBinding Foreground}" />
-                                                    <Path Grid.Column="1"
-                                                          Margin="0,0,10,0"
-                                                          VerticalAlignment="Center"
-                                                          Data="M 0 0 L 6 6 L 12 0 Z"
-                                                          Fill="White"
-                                                          Width="12"
-                                                          Height="6"/>
-                                                </Grid>
-                                            </ToggleButton>
-
-                                            <!-- Dropdown -->
-                                            <Popup x:Name="PART_Popup"
-                                                   Placement="Bottom"
-                                                   Width="320"
-                                                   IsOpen="{TemplateBinding IsDropDownOpen}"
-                                                   AllowsTransparency="True"
-                                                   Focusable="False"
-                                                   PopupAnimation="Slide">
-                                                <Border CornerRadius="8"
-                                                        Background="#222222EE"
-                                                        BorderBrush="White"
-                                                        BorderThickness="1"
-                                                        Margin="0,2,0,0">
-                                                    <ScrollViewer>
-                                                        <ItemsPresenter />
-                                                    </ScrollViewer>
-                                                </Border>
-                                            </Popup>
-                                        </Grid>
-
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="PART_Button" Property="BorderBrush" Value="#AAAAAA"/>
-                                            </Trigger>
-                                            <Trigger Property="IsDropDownOpen" Value="True">
-                                                <Setter TargetName="PART_Button" Property="BorderBrush" Value="#5FA8FF"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </ComboBox.Template>
-
-
-                                <ComboBox.ItemContainerStyle>
-                                    <Style TargetType="ComboBoxItem">
-                                        <Setter Property="Foreground" Value="White"/>
-                                        <Setter Property="Background" Value="Transparent"/>
-                                        <Setter Property="Padding" Value="6,4"/>
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="ComboBoxItem">
-                                                    <Border x:Name="Bd" Background="{TemplateBinding Background}">
-                                                        <TextBlock Text="{Binding Name}" Margin="6,0"/>
-                                                    </Border>
-                                                    <ControlTemplate.Triggers>
-                                                        <Trigger Property="IsHighlighted" Value="True">
-                                                            <Setter TargetName="Bd" Property="Background" Value="#333"/>
-                                                        </Trigger>
-                                                        <Trigger Property="IsSelected" Value="True">
-                                                            <Setter TargetName="Bd" Property="Background" Value="#444"/>
-                                                        </Trigger>
-                                                    </ControlTemplate.Triggers>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                </ComboBox.ItemContainerStyle>
-                            </ComboBox>
-
-                        </Grid>
-                        </Grid>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <DatePicker Grid.Row="0" Grid.Column="0"
-                                    SelectedDate="{Binding SelectedDate, Mode=TwoWay}">
-                            <DatePicker.Resources>
-                                <!-- Hide the default textbox -->
-                                <Style TargetType="DatePickerTextBox">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                </Style>
-                            </DatePicker.Resources>
-
-                            <DatePicker.Template>
-                                <ControlTemplate TargetType="DatePicker">
-                                    <Grid>
-                                        <ToggleButton x:Name="PART_Button"
-                                                      Background="Transparent"
-                                                      Foreground="White"
-                                                      BorderBrush="#afafaf"
-                                                      BorderThickness="1"
-                                                      Padding="10"
-                                                      HorizontalContentAlignment="Left"
-                                                      Margin="0,0,10,0">
-                                            <ToggleButton.Resources>
-                                                <Style TargetType="{x:Type Border}">
-                                                    <Setter Property="CornerRadius" Value="10"/>
-                                                </Style>
-                                            </ToggleButton.Resources>
-                                            <TextBlock Text="{Binding SelectedDate, RelativeSource={RelativeSource TemplatedParent}, StringFormat={}{0:dd/MM/yyyy}}"/>
-                                        </ToggleButton>
-
-                                        <!-- Popup -->
-                                        <Popup x:Name="PART_Popup"
-                                               Placement="Bottom"
-                                               AllowsTransparency="True"
-                                               Focusable="False"
-                                               IsOpen="{Binding IsChecked, ElementName=PART_Button, Mode=TwoWay}">
-                                            <Border Background="#222222EE"
-                                                    BorderBrush="White"
-                                                    BorderThickness="1"
-                                                    CornerRadius="10"
-                                                    Padding="10"
-                                                    SnapsToDevicePixels="True">
-                                                <Calendar x:Name="PART_Calendar"
-                                                          SelectedDate="{Binding SelectedDate, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                                          Background="#222222"
-                                                          Foreground="White"/>
-                                            </Border>
-                                        </Popup>
-                                    </Grid>
+            <!-- Settings Button -->
+            <Button x:Name="SettingsButton"
+                    Content="⚙️"
+                    FontSize="28"
+                    Width="50"
+                    Height="50"
+                    Background="Transparent"
+                    BorderBrush="Transparent"
+                    Foreground="#cbd5e1"
+                    HorizontalAlignment="Right"
+                    Margin="0,0,20,0"
+                    Cursor="Hand"
+                    Click="SettingsButton_Click">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Border Background="{TemplateBinding Background}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
                                 </ControlTemplate>
-                            </DatePicker.Template>
-                        </DatePicker>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Grid>
 
+        <!-- Side Navigation Panel -->
+        <Border x:Name="SideMenu"
+                Background="#0f1724"
+                Width="220"
+                VerticalAlignment="Stretch"
+                HorizontalAlignment="Left"
+                RenderTransformOrigin="0,0"
+                BorderBrush="Gray" 
+            BorderThickness="0,0,1,0" >
+            <Border.RenderTransform>
+                <TranslateTransform x:Name="SideMenuTransform" X="-220"/>
+            </Border.RenderTransform>
 
-                        <Button Click="AddTransaction"
-                                Grid.Row="0" 
-                                Grid.Column="1"
-                                Background="Transparent"
-                                Foreground="White"
-                                BorderBrush="#afafaf"
-                                BorderThickness="1"
-                                Padding="10,5,10,5">
-                            <Button.Resources>
-                                <Style TargetType="{x:Type Border}">
-                                    <Setter Property="CornerRadius" Value="10"/>
-                                </Style>
-                            </Button.Resources>
-                            Add
-                        </Button>
-                    </Grid>
-                </StackPanel>
-                </StackPanel>
-            </Border>
-            <Border Grid.Column="1"
-                    BorderBrush="Gray" 
-                    BorderThickness="1" 
-                    CornerRadius="10" 
-                    Padding="20" 
-                    Margin="10">
-                <Border.Background>
-                    <SolidColorBrush Opacity="0.17" Color="#000" />
-                </Border.Background>
-                <Border.Effect>
-                    <DropShadowEffect />
-                </Border.Effect>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0"
-                               Foreground="White"
-                               FontWeight="Bold">
-                        Overview
-                    </TextBlock>
-                <Grid Grid.Row="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+            <StackPanel Margin="10,70,10,10">
+                <Button Content="🏠  Home"
+                        Margin="0,10,0,0"
+                        Padding="10"
+                        Background="Transparent"
+                        Foreground="White"
+                        BorderBrush="Transparent"
+                        FontSize="26"
+                        HorizontalContentAlignment="Left"
+                        Click="HomePageButton_Click"/>
 
-                        <!-- Left column: Spending breakdown -->
-                        <Border Grid.Column="0"
-                                BorderBrush="Gray" 
-                                BorderThickness="1" 
-                                CornerRadius="10" 
-                                Padding="20" 
-                                Margin="10">
-                            <StackPanel>
-                                <TextBlock Foreground="White"
-                                           FontWeight="Bold">
-                                    Spending breakdown
-                                </TextBlock>
-                                <lvc:PieChart Series="{Binding SeriesCollection}"
-                                              LegendLocation="Bottom"
-                                              InnerRadius="100" 
-                                              Height="400"
-                                              Width="400"
-                                              Name="pieChart">
-                                    <lvc:PieChart.DataTooltip>
-                                        <local:ToolTip x:Name="myCustomTooltip"/>
-                                    </lvc:PieChart.DataTooltip>
-                                </lvc:PieChart>
-                                <TextBlock Foreground="White"
-                                            FontWeight="Bold">
-                                    Monthly budgets
-                                </TextBlock>
-                                <ItemsControl ItemsSource="{Binding Payments}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Margin="0,10,0,10">
-                                                <DockPanel>
-                                                    <TextBlock Text="{Binding Title}" />
-                                                    <TextBlock Text="{Binding AmountText}"
-                                                               TextAlignment="Right"
-                                                               VerticalAlignment="Bottom"
-                                                               FontSize="20"
-                                                               DockPanel.Dock="Right"/>
-                                                </DockPanel>
-                                                <ProgressBar Value="{Binding Progress}"
-                                                             Maximum="{Binding Max}"
-                                                             Height="20"/>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Right column: Transactions -->
-                        <Border Grid.Column="1" 
-                                BorderBrush="Gray" 
-                                BorderThickness="1" 
-                                CornerRadius="10" 
-                                Padding="20" 
-                                Margin="10">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-
-                                <TextBlock Text="Transactions"
-                                           Foreground="White"
-                                           FontWeight="Bold"
-                                           Grid.Row="0"/>
-
-                                <ScrollViewer Grid.Row="1"
-                                              VerticalScrollBarVisibility="Auto">
-                                    <ItemsControl ItemsSource="{Binding Transactions}">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Border BorderBrush="Gray" 
-                                                        BorderThickness="1" 
-                                                        CornerRadius="10"
-                                                        Margin="0,0,0,10">
-                                                    <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <Grid Grid.Row="0" 
-                                                          Grid.Column="0">
-                                                        <Grid.RowDefinitions>
-                                                            <RowDefinition Height="Auto"/>
-                                                            <RowDefinition Height="Auto"/>
-                                                            <RowDefinition Height="Auto"/>
-                                                        </Grid.RowDefinitions>
-                                                        <TextBlock Grid.Row="0" 
-                                                                   Grid.Column="0" 
-                                                                   Padding="5,0,0,0"
-                                                                   Text="{Binding Note}"/>
-                                                        <TextBlock Grid.Row="1" 
-                                                                   Grid.Column="0" 
-                                                                   Padding="5,0,0,0"
-                                                                   Text="{Binding DateText}"
-                                                                   FontSize="18"/>
-                                                        <Grid Grid.Row="2" 
-                                                              Grid.Column="0" >
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="Auto" />
-                                                                <ColumnDefinition Width="*" />
-                                                            </Grid.ColumnDefinitions>
-                                                            <Ellipse Width="19" 
-                                                                     Height="19" Fill="White" 
-                                                                     Margin="5,5,5,5"/>
-                                                            <Ellipse Width="15" 
-                                                                     Height="15" Fill="{Binding Category.Color}" 
-                                                                     Margin="5,0,5,0"/>
-                                                            <TextBlock Grid.Row="0" 
-                                                                       Grid.Column="1" 
-                                                                       Text="{Binding Category.Name}"
-                                                                       FontSize="18"/>
-                                                        </Grid>
-                                                    </Grid>
-                                                    <TextBlock Grid.Row="0" 
-                                                                   Grid.Column="1"
-                                                                   Foreground="{Binding Color}"
-                                                                   Text="{Binding AmountText}"
-                                                                   Margin="40,0,20,0"/>
-                                                    <Button Click="DeleteTransaction"
-                                                                Grid.Row="0" 
-                                                                Grid.Column="3"
-                                                                Padding="10,5,10,5"
-                                                                Background="Transparent"
-                                                                Foreground="White"
-                                                                BorderThickness="1,0,0,0"
-                                                                Tag="{Binding}">
-                                                        <Button.Resources>
-                                                            <Style TargetType="{x:Type Border}">
-                                                                <Setter Property="CornerRadius" Value="0,10,10,0"/>
-                                                            </Style>
-                                                        </Button.Resources>
-                                                        Delete
-                                                        </Button>
-                                                    </Grid>
-                                                </Border>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </ScrollViewer>
-                            </Grid>
-                        </Border>
-                    </Grid>
-                </Grid>
-            </Border>
+                <Button Content="⚙️  Settings"
+                        Margin="0,10,0,0"
+                        Padding="10"
+                        Background="Transparent"
+                        Foreground="White"
+                        BorderBrush="Transparent"
+                        FontSize="26"
+                        HorizontalContentAlignment="Left"
+                        Click="SettingsPageButton_Click"/>
+            </StackPanel>
+        </Border>
     </Grid>
-
-    <Window.Resources>
-        <Style TargetType="ProgressBar">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ProgressBar">
-                        <Grid x:Name="Root" ClipToBounds="True" Height="20">
-                            <!-- Background -->
-                            <Border x:Name="Background"
-                                    CornerRadius="10"
-                                    Background="#1f1f1f"/>
-                            <!-- Filled part -->
-                            <Border x:Name="PART_Track"
-                                    Background="Transparent"
-                                    CornerRadius="10">
-                                <Border x:Name="PART_Indicator"
-                                        Background="#4CAF50"
-                                        CornerRadius="10"
-                                        HorizontalAlignment="Left"
-                                        Width="0"/>
-                            </Border>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsIndeterminate" Value="True">
-                                <Setter TargetName="PART_Indicator" Property="Background" Value="#4CAF50"/>
-                            </Trigger>
-                            <Trigger Property="Orientation" Value="Vertical">
-                                <Setter TargetName="Root" Property="LayoutTransform">
-                                    <Setter.Value>
-                                        <RotateTransform Angle="-90"/>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </Window.Resources>
 </Window>

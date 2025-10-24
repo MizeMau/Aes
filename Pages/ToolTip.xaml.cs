@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace Aes
+namespace Aes.Pages
 {
     public partial class ToolTip : UserControl, IChartTooltip
     {
