@@ -19,11 +19,11 @@
         </Grid.ColumnDefinitions>
         
         <Border Grid.Column="0"
-                    BorderBrush="Gray" 
-                    BorderThickness="1" 
-                    CornerRadius="10" 
-                    Padding="20" 
-                    Margin="10"
+                BorderBrush="Gray" 
+                BorderThickness="1" 
+                CornerRadius="10" 
+                Padding="20" 
+                Margin="10"
                 SnapsToDevicePixels="True" ClipToBounds="False">
                 <Border.Background>
                     <SolidColorBrush Opacity="0.17" Color="#000" />
@@ -92,8 +92,9 @@
                         </TextBlock>
                         </Grid>
                         <Separator/>
-                        <TextBlock>Note</TextBlock>
-                        <TextBox Background="Transparent"
+                    <TextBlock>Note</TextBlock>
+                    <TextBox     Text="{Binding Note}"
+                                 Background="Transparent"
                                  Foreground="White"
                                  Padding="10"
                                  Height="350"
@@ -133,7 +134,7 @@
                                  PreviewTextInput="MoneyTextBox_PreviewTextInput"
                                  TextChanged="MoneyTextBox_TextChanged"
                                  HorizontalContentAlignment="Right"
-                                 Text="0 €"
+                                 Text="{Binding Amount}"
                                  Width="320">
                             <TextBox.Resources>
                                 <Style TargetType="{x:Type Border}">
@@ -313,7 +314,7 @@
                         </DatePicker>
 
 
-                        <Button Click="test"
+                        <Button Click="AddTransaction"
                                 Grid.Row="0" 
                                 Grid.Column="1"
                                 Background="Transparent"
@@ -487,7 +488,8 @@
                                                                 Padding="10,5,10,5"
                                                                 Background="Transparent"
                                                                 Foreground="White"
-                                                                BorderThickness="1,0,0,0">
+                                                                BorderThickness="1,0,0,0"
+                                                                Tag="{Binding}">
                                                         <Button.Resources>
                                                             <Style TargetType="{x:Type Border}">
                                                                 <Setter Property="CornerRadius" Value="0,10,10,0"/>

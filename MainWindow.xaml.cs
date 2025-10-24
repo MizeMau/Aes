@@ -32,11 +32,7 @@ namespace Aes
             InitializeComponent();
             this.pieChart.DataHover += PieChart_DataHover;
 
-#if DEBUG
             var transactionCategoryService = new Database.Table.Transaction.Category.Service();
-            var transactionRecurringService = new Database.Table.Transaction.Recurring.Service();
-            var transactionTransactionService = new Database.Table.Transaction.Transaction.Service();
-
             if (!transactionCategoryService.GetQuery().Any())
             {
                 var categories = new List<Database.Table.Transaction.Category.Model>
@@ -48,6 +44,9 @@ namespace Aes
                 };
                 transactionCategoryService.CreateRange(categories);
             }
+#if DEBUG
+            var transactionRecurringService = new Database.Table.Transaction.Recurring.Service();
+            var transactionTransactionService = new Database.Table.Transaction.Transaction.Service();
 
             if (!transactionTransactionService.GetQuery().Any())
             {
@@ -74,26 +73,40 @@ namespace Aes
             this.myCustomTooltip.Value = $"{chartPoint.Y}€ ({chartPoint.Participation:P0})";
             this.myCustomTooltip.Fill = pieSeries!.Fill;
         }
-        private void test(object? sender, EventArgs e)
+        private void AddTransaction(object? sender, EventArgs e)
         {
-            if (!(DataContext is ViewModel))
-                return;
+            var transcation = new Database.Table.Transaction.Transaction.Model();
+            var dataContext = (ViewModel)this.DataContext;
 
-            var transactionCategoryService = new Database.Table.Transaction.Category.Service();
-            var test = transactionCategoryService.GetAll();
+            decimal value = 0;
+            var culture = CultureInfo.CreateSpecificCulture("de-DE");
+            string valueString = dataContext.Amount.Replace(" €", "").Trim();
+            valueString = Regex.Replace(valueString, @"[^\d,\.]", "");
+            if (!decimal.TryParse(valueString, NumberStyles.Number, culture, out value)) return;
+            transcation.Amount = value;
 
-            var vm = (ViewModel)DataContext;
-            var firstPayment = vm.Payments[0];
-            firstPayment.Progress += 10;
+            transcation.Note = dataContext.Note;
+            transcation.Date = DateOnly.FromDateTime(dataContext.SelectedDate);
+
+            transcation.TransactionCategoryID = dataContext.SelectedCategory.TransactionCategoryID;
+
+            if (transcation.Amount <= 0) return;
+            if (transcation.Note == "") return;
+            if (transcation.Date == new DateOnly()) return;
+            if (transcation.TransactionCategoryID == 0) return;
+            var transactionTransactionService = new Database.Table.Transaction.Transaction.Service();
+            transactionTransactionService.Create(transcation);
+            DataContext = new ViewModel();
         }
         private void DeleteTransaction(object? sender, EventArgs e)
         {
-            if (!(DataContext is ViewModel))
+            if (!(sender is Button))
                 return;
+            var transactionTransactionService = new Database.Table.Transaction.Transaction.Service();
 
-            var vm = (ViewModel)DataContext;
-            var firstPayment = vm.Payments[0];
-            firstPayment.Progress += 10;
+            var transaction = (Transaction)(sender as Button)!.Tag;
+            if (!transactionTransactionService.Delete(transaction.TransactionTransactionID)) return;
+            DataContext = new ViewModel();
         }
         private void MoneyTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
@@ -148,11 +161,27 @@ namespace Aes
             get => _selectedCategory;
             set { _selectedCategory = value; OnPropertyChanged(nameof(SelectedCategory)); }
         }
-        private DateTime? _selectedDate;
-        public DateTime? SelectedDate
+        private DateTime _selectedDate;
+        public DateTime SelectedDate
         {
             get => _selectedDate;
             set { _selectedDate = value; OnPropertyChanged(nameof(SelectedDate)); }
+        }
+
+        private string _amount;
+        public string Amount
+        {
+            get => _amount;
+            set { 
+                _amount = value;
+                OnPropertyChanged(nameof(Amount)); 
+            }
+        }
+        private string _note;
+        public string Note
+        {
+            get => _note;
+            set { _note = value; OnPropertyChanged(nameof(Note)); }
         }
 
         private decimal _expense;
@@ -175,8 +204,10 @@ namespace Aes
             var transactionCategoryService = new Database.Table.Transaction.Category.Service();
             var transactionTransactionService = new Database.Table.Transaction.Transaction.Service();
             Categories = transactionCategoryService.GetAll();
-            SelectedCategory = Categories[0];
+            SelectedCategory = Categories.First();
             SelectedDate = DateTime.Now;
+            Amount = "0 €";
+            Note = "";
 
             var transactions = transactionTransactionService.GetAllByMonth()
                 .OrderByDescending(o => (o.Date, o.TransactionTransactionID))
@@ -221,11 +252,12 @@ namespace Aes
                 .ToDictionary(d => d.CategoryID, d => d.TotalAmount);
             var pieSeries = Categories.Where(w => w.Type == Database.Table.Transaction.Category.Type.Expense)
                 .Select(s => {
+                    decimal value = transactionsDict.ContainsKey(s.TransactionCategoryID) ? transactionsDict[s.TransactionCategoryID] : 0;
                     return new PieSeries
                     {
                         Title = s.Name,
                         Fill = (SolidColorBrush)new BrushConverter().ConvertFrom(s.Color)!,
-                        Values = new ChartValues<decimal> { transactionsDict[s.TransactionCategoryID] }
+                        Values = new ChartValues<decimal> { value }
                     };
                 });
             SeriesCollection = [
@@ -237,11 +269,12 @@ namespace Aes
                 .ToList()
                 .ForEach(f =>
                 {
+                    decimal value = transactionsDict.ContainsKey(f.TransactionCategoryID) ? transactionsDict[f.TransactionCategoryID] : 0;
                     payments.Add(new PaymentProgress
                     {
                         Title = f.Name,
                         Max = f.PlannedAmount,
-                        Progress = transactionsDict[f.TransactionCategoryID]
+                        Progress = value
                     });
                 });
             Payments = payments;
@@ -252,6 +285,7 @@ namespace Aes
                 var category = Categories.Single(s => s.TransactionCategoryID == transcation.TransactionCategoryID);
                 transactionsCollection.Add(new Transaction()
                 {
+                    TransactionTransactionID = transcation.TransactionTransactionID,
                     Note = transcation.Note,
                     Date = transcation.Date,
                     Category = category,

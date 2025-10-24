@@ -10,6 +10,8 @@ namespace Aes.Model
 {
     public class Transaction : INotifyPropertyChanged
     {
+        public long TransactionTransactionID { get; set; }
+
         private string _note;
         private DateOnly _date;
         private Database.Table.Transaction.Category.Model _category;
